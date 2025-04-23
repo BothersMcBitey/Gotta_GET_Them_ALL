@@ -31,12 +31,10 @@ def get_possible_moves(pokemon_name:str="", pokemon_id:int=-1, pokemon_level:int
                 moves.append(entry["move"])
     return moves
 
-
 def get_pokemon_stats(pokemon_name:str="", pokemon_id:int=-1)->list:
     pokemon_data = _get_data("pokemon", pokemon_name, pokemon_id)
     stats = []
     for s in pokemon_data["stats"]:
-        # simplifies things into just stat name and base value
         stat = {"name" : s["stat"]["name"], "value" : s["base_stat"]}
         stats.append(stat)
     return stats
