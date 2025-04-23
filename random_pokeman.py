@@ -60,6 +60,20 @@ def get_possible_moves(pokemon_name: str = "", pokemon_id: int = -1, pokemon_lev
                 moves.append(entry["move"])
     return moves
 
+
+def get_pokemon_stats(pokemon_name:str="",pokemon_id:int=-1,pokemon_level:int=1)->list:
+    if pokemon_name == "" and pokemon_id == -1:
+        raise ValueError("You must specify either name or id")
+    pokemon = requests.get(f"https://pokeapi.co/api/v2/pokemon/{pokemon_name if pokemon_id == -1 else pokemon_id}/")
+    if pokemon.status_code != 200:
+        raise Exception(f"Invalid response, {pokemon.status_code}")
+    pokemon_data = json.loads(pokemon.content)
+    stats = []
+    for s in pokemon_data["stats"]:
+        stat = {"name" : s["stat"]["name"], "value" : s["base_stat"]}
+        stats.append(stat)
+    return stats
+
 # Get Pokémon choices
 if mode == '1':
     user_pokemon = get_player_pokemon("User")
@@ -129,3 +143,6 @@ else:
             break
         else:
             print("Invalid move. Please choose a valid move from the list.")
+
+
+
