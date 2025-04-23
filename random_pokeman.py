@@ -2,21 +2,28 @@ import requests
 import json
 import random
 
-# Get the list of Pokémon from the API
-url = 'https://pokeapi.co/api/v2/pokemon/'
+# Get the list of Pokémon from the API( fetch more than 20)
+url = 'https://pokeapi.co/api/v2/pokemon?limit=1000'
 response = requests.get(url)
 pokemon_list = json.loads(response.text)['results']
 
 # Create a list of Pokémon names for easy validation
 pokemon_names = [pokemon['name'] for pokemon in pokemon_list]
+pokemon_display_names = [name.title() for name in pokemon_names]
 
 # Print available Pokémon
-print("Available Pokémon:")
-for name in pokemon_names:
-    print(name)
+print("\n====================")
+print("         Available Pokémon       ")
+print("================================")
+for name in pokemon_display_names:
+    print(f"- {name}")
+print("\n")
 
 # Choose game mode
 while True:
+    print("Select your game mode:")
+    print("1 - Single Player(You vs cpu)")
+    print("2 - Two Players (Player 1 vs Player 2)")
     mode = input("Choose game mode: 1 Player (1) or 2 Player (2): ").strip()
     if mode in ['1', '2']:
         break
