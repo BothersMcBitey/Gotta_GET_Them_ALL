@@ -3,8 +3,6 @@
 import requests
 import json
 
-from random_pokeman import get_possible_moves
-
 pokemon_attributes = [
     "abilities", "base_experience", "cries", "forms", "game_indices", "height", "held_items", "id", "is_default",
     "location_area_encounters", "moves", "name", "order", "past_abilities", "past_types", "species", "sprites", "stats",
@@ -44,7 +42,6 @@ def get_pokemon_stats(pokemon_name:str="",pokemon_id:int=-1,pokemon_level:int=1)
 
 
 # Run this code to test if it works:
-b = get_possible_moves("geodude", pokemon_level=1)
+
 a = get_pokemon_stats("geodude", pokemon_level=1)
 print(a)
-print(b)
