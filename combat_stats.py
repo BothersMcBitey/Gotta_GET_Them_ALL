@@ -9,13 +9,16 @@ pokemon_attributes = [
     "types", "weight"
 ]
 
-def get_possible_moves(pokemon_name:str="",pokemon_id:int=-1,pokemon_level:int=1)->list:
+def get_pokemon(pokemon_name:str="",pokemon_id:int=-1,pokemon_level:int=1)->dict:
     if pokemon_name == "" and pokemon_id == -1:
         raise ValueError("You must specify either name or id")
     pokemon = requests.get(f"https://pokeapi.co/api/v2/pokemon/{pokemon_name if pokemon_id == -1 else pokemon_id}/")
     if pokemon.status_code != 200:
         raise Exception(f"Invalid response, {pokemon.status_code}")
-    pokemon_data = json.loads(pokemon.content)
+    return json.loads(pokemon.content)
+
+def get_possible_moves(pokemon_name:str="",pokemon_id:int=-1,pokemon_level:int=1)->list:
+    pokemon_data = get_pokemon(pokemon_name,pokemon_id,pokemon_level)
     moves = []
     for entry in pokemon_data["moves"]:
         # get most recent entry - from the most recent game
@@ -28,14 +31,10 @@ def get_possible_moves(pokemon_name:str="",pokemon_id:int=-1,pokemon_level:int=1
 
 
 def get_pokemon_stats(pokemon_name:str="",pokemon_id:int=-1,pokemon_level:int=1)->list:
-    if pokemon_name == "" and pokemon_id == -1:
-        raise ValueError("You must specify either name or id")
-    pokemon = requests.get(f"https://pokeapi.co/api/v2/pokemon/{pokemon_name if pokemon_id == -1 else pokemon_id}/")
-    if pokemon.status_code != 200:
-        raise Exception(f"Invalid response, {pokemon.status_code}")
-    pokemon_data = json.loads(pokemon.content)
+    pokemon_data = get_pokemon(pokemon_name,pokemon_id,pokemon_level)
     stats = []
     for s in pokemon_data["stats"]:
+        # simplifies things into just stat name and base value
         stat = {"name" : s["stat"]["name"], "value" : s["base_stat"]}
         stats.append(stat)
     return stats
