@@ -1,6 +1,7 @@
 import requests
 import json
 import random
+import combat_stats as cs
 
 # Get the list of Pokémon from the API
 url = 'https://pokeapi.co/api/v2/pokemon/'
@@ -42,38 +43,6 @@ def get_player_pokemon(player_name):
         else:
             print("Invalid input, please write R or C.")
 
-# Function to get valid moves for a Pokémon
-def get_possible_moves(pokemon_name: str = "", pokemon_id: int = -1, pokemon_level: int = 1) -> list:
-    if pokemon_name == "" and pokemon_id == -1:
-        raise ValueError("You must specify either name or id")
-    pokemon = requests.get(f"https://pokeapi.co/api/v2/pokemon/{pokemon_name if pokemon_id == -1 else pokemon_id}/")
-    if pokemon.status_code != 200:
-        raise Exception(f"Invalid response, {pokemon.status_code}")
-    pokemon_moves_data = json.loads(pokemon.content)
-    moves = []
-    for entry in pokemon_moves_data["moves"]:
-        # get most recent entry - from the most recent game
-        most_recent_version = entry["version_group_details"][-1]
-        # only get moves it learns naturally
-        if most_recent_version["move_learn_method"]["name"] == "level-up":
-            if most_recent_version["level_learned_at"] <= pokemon_level:
-                moves.append(entry["move"])
-    return moves
-
-
-def get_pokemon_stats(pokemon_name:str="",pokemon_id:int=-1,pokemon_level:int=1)->list:
-    if pokemon_name == "" and pokemon_id == -1:
-        raise ValueError("You must specify either name or id")
-    pokemon = requests.get(f"https://pokeapi.co/api/v2/pokemon/{pokemon_name if pokemon_id == -1 else pokemon_id}/")
-    if pokemon.status_code != 200:
-        raise Exception(f"Invalid response, {pokemon.status_code}")
-    pokemon_data = json.loads(pokemon.content)
-    stats = []
-    for s in pokemon_data["stats"]:
-        stat = {"name" : s["stat"]["name"], "value" : s["base_stat"]}
-        stats.append(stat)
-    return stats
-
 # Get Pokémon choices
 if mode == '1':
     user_pokemon = get_player_pokemon("User")
@@ -81,8 +50,8 @@ if mode == '1':
     print(f"CPU chose: {cpu_pokemon}")
 
     # Get moves
-    user_moves = get_possible_moves(user_pokemon, pokemon_level=1)
-    cpu_moves = get_possible_moves(cpu_pokemon, pokemon_level=1)
+    user_moves = cs.get_possible_moves(user_pokemon, pokemon_level=1)
+    cpu_moves = cs.get_possible_moves(cpu_pokemon, pokemon_level=1)
 
     user_move_names = [move['name'] for move in user_moves]
     cpu_move_names = [move['name'] for move in cpu_moves]
@@ -112,8 +81,8 @@ else:
     player2_pokemon = get_player_pokemon("Player 2")
 
     # Get moves
-    p1_moves = get_possible_moves(player1_pokemon, pokemon_level=1)
-    p2_moves = get_possible_moves(player2_pokemon, pokemon_level=1)
+    p1_moves = cs.get_possible_moves(player1_pokemon, pokemon_level=1)
+    p2_moves = cs.get_possible_moves(player2_pokemon, pokemon_level=1)
 
     p1_move_names = [move['name'] for move in p1_moves]
     p2_move_names = [move['name'] for move in p2_moves]
@@ -143,6 +112,3 @@ else:
             break
         else:
             print("Invalid move. Please choose a valid move from the list.")
-
-
-
