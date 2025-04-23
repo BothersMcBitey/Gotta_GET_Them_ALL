@@ -10,17 +10,17 @@ pokemon_attributes = [
     "types", "weight"
 ]
 
-def _get_data(object_type:str, name:str= "", id:int=-1)->dict:
-    if name == "" and id == -1:
-        raise ValueError("You must specify either name or id")
-    data = requests.get(f"https://pokeapi.co/api/v2/{object_type}/{name if id == -1 else id}/")
+def _get_data(object_type:str, object_name:str= "", object_id:int=-1)->dict:
+    if object_name == "" and object_id == -1:
+        raise ValueError(f"You must specify either name or id. Received {object_name} and {object_id}")
+    data = requests.get(f"https://pokeapi.co/api/v2/{object_type}/{object_name if object_id == -1 else object_id}/")
     if data.status_code != 200:
         raise Exception(f"Invalid response, {data.status_code}")
     return json.loads(data.content)
 
 # EXTERNAL METHODS =====================================================================================================
 def get_possible_moves(pokemon_name:str="", pokemon_id:int=-1, pokemon_level:int=1)->list:
-    pokemon_data = _get_data("pokemon", pokemon_name, pokemon_id)
+    pokemon_data = _get_data("pokemon", object_name=pokemon_name, object_id=pokemon_id)
     moves = []
     for entry in pokemon_data["moves"]:
         # get most recent entry - from the most recent game
@@ -32,7 +32,7 @@ def get_possible_moves(pokemon_name:str="", pokemon_id:int=-1, pokemon_level:int
     return moves
 
 def get_pokemon_stats(pokemon_name:str="", pokemon_id:int=-1)->list:
-    pokemon_data = _get_data("pokemon", pokemon_name, pokemon_id)
+    pokemon_data = _get_data("pokemon", object_name=pokemon_name, object_id=pokemon_id)
     stats = []
     for s in pokemon_data["stats"]:
         stat = {"name" : s["stat"]["name"], "value" : s["base_stat"]}
@@ -40,7 +40,7 @@ def get_pokemon_stats(pokemon_name:str="", pokemon_id:int=-1)->list:
     return stats
 
 def get_move_stats(move_name:str="", move_id:int=-1)->list:
-    move_data = _get_data("move", move_name, move_id)
+    move_data = _get_data("move", object_name=move_name, object_id=move_id)
     stats = []
     for key in ["accuracy", "power", "type", "pp", "name"]:
         stats.append({key : move_data[key]})
