@@ -48,7 +48,7 @@ def get_move_stats(move_name:str="", move_id:int=-1)->list:
 
 
 # Run this code to test if it works:
-'''
-print(get_move_stats("pound"))
-a = get_pokemon_stats("geodude", pokemon_level=1)
-print(a)'''
+#print(get_move_stats("pound"))
+#print(get_pokemon_stats("geodude"))
+
+
