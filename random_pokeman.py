@@ -73,4 +73,21 @@ def get_possible_moves(pokemon_name:str="",pokemon_id:int=-1,pokemon_level:int=1
 # Run this code to test if it works:
 
 user_moves = get_possible_moves(user_pokemon, pokemon_level=1)
-print(user_moves)
+# Extract just the names
+user_move_names = [move['name'] for move in user_moves]
+
+# Print the move names
+print("User's available moves:")
+for move_name in user_move_names:
+    print(f"- {move_name}")
+
+while True:
+    chosen_move = input("Choose your move from the list above: ").lower()
+    if chosen_move in user_move_names:
+        print(f"User used {chosen_move}!")
+        break
+    else:
+        print("Invalid move. Please choose a valid move from the list.")
+
+
+

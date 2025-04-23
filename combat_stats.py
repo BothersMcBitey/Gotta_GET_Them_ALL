@@ -41,6 +41,6 @@ def get_pokemon_stats(pokemon_name:str="",pokemon_id:int=-1,pokemon_level:int=1)
 
 
 # Run this code to test if it works:
-'''
+
 a = get_pokemon_stats("geodude", pokemon_level=1)
-print(a)'''
+print(a)
