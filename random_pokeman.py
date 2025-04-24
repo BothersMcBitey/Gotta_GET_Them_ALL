@@ -6,6 +6,14 @@ import pokemon as pk
 # only global variable, which is here because of laziness ==============================================================
 list_of_pokemon_names = ""
 
+class Player:
+    def __init__(self, name:str, pokemon:pk.Pokemon=None):
+        self.name:str = name
+        self.pokemon:pk.Pokemon = pokemon
+
+    def give_pokemon(self, pokemon:pk.Pokemon)->None:
+        self.pokemon = pokemon
+
 def get_choice(message:str, options:list=["y","n"], error_message:str="Invalid input. Try again.",
                random_choice:bool=False)->str:
     options_string = "("
@@ -46,7 +54,7 @@ def display_pokemon_names()->list:
 
 
 # Function to get a player's Pokémon
-def get_player_pokemon(player_name)->str:
+def get_player_pokemon_name(player_name)->str:
     is_random = get_choice(f"{player_name}, would you like a random Pokémon (r) or choose your own (c)?",
                            ["r","c"], "Invalid input, please write R or C.")
     pokemon = None
@@ -62,32 +70,26 @@ def get_player_pokemon(player_name)->str:
 
 
 def play_game(game_mode:int=1)->None:
-    player_dict = {
-        "name" : "",
-        "pokemon" : None
-    }
-    player_one = player_dict.copy()
-    player_two = player_dict.copy()
+    # Get player's names
+    p1_name = input("Player one, what is your name?\n> ")
+    p2_name = ""
+    if game_mode == 1:
+        p2_name = "CPU"
+    elif game_mode == 2:
+        p2_name = input("Player two, what is your name?\n> 1")
+
+    #build players
+    player_one: Player = Player(p1_name)
+    player_two: Player = Player(p2_name)
     players = [player_one, player_two]
 
-    # Get player's names
-    player_one["name"] = input("Player one, what is your name?\n> ")
-    if game_mode == 1:
-        player_two["name"] = "CPU"
-    elif game_mode == 2:
-        player_two["name"] = input("Player two, what is your name?\n> 1")
-
     # Choose pokemon
-    player_one["pokemon"] = get_player_pokemon(player_one["name"])
+    player_one.pokemon = pk.Pokemon(get_player_pokemon_name(player_one.name))
     if game_mode == 1:
-        player_two["pokemon"] = random.choice(list_of_pokemon_names)
-        print(f"CPU chose: {player_two["pokemon"].capitalize()}")
+        player_two.pokemon = pk.Pokemon(random.choice(list_of_pokemon_names))
+        print(f"CPU chose: {player_two.pokemon.name.capitalize()}")
     elif game_mode == 2:
-        player_two["pokemon"] = get_player_pokemon(player_two["name"])
-
-    # get pokemon stats
-    for player in players:
-        player["pokemon"] = pk.Pokemon(player["pokemon"])
+        player_two.pokemon = pk.Pokemon(get_player_pokemon_name(player_two.name))
 
     # play game
     player_id:int = 0
@@ -95,29 +97,27 @@ def play_game(game_mode:int=1)->None:
         # make shortcuts to get player info
         p = players[player_id]
         other_p = players[(player_id + 1) % 2]
-        p_mon:pk.Pokemon = p["pokemon"]
-        other_mon:pk.Pokemon = other_p["pokemon"]
 
-        print(f"It's {p["name"]}'s turn!")
+        print(f"It's {p.name}'s turn!")
         # User picks move
-        choose_random = (p["name"] == "CPU" and game_mode == 1)
-        chosen_move = get_choice(f"What will {p["name"]}'s {p_mon.name.capitalize()} do?",
-                                 [x.name for x in p_mon.move_set],
+        choose_random = (p.name == "CPU" and game_mode == 1)
+        chosen_move = get_choice(f"What will {p.name}'s {p.pokemon.name.capitalize()} do?",
+                                 [x.name for x in p.pokemon.move_set],
                                  "Invalid move. Please choose a valid move from the list.", choose_random)
-        print(f"{p_mon.name.capitalize()} uses {chosen_move}!")
+        print(f"{p.pokemon.name.capitalize()} uses {chosen_move}!")
 
         # resolve attack
-        move:pk.Move = p_mon.get_move(chosen_move)
+        move:pk.Move = p.pokemon.get_move(chosen_move)
         # Let's use accuracy (even if incorrectly)
         hits:bool = move.accuracy >= random.random()
         if hits:
-            print(f"{move.name} hits {other_p["name"]}'s {other_mon.name} for {move.power} damage.")
-            other_mon.hp -= move.power
+            print(f"{move.name} hits {other_p.name}'s {other_p.pokemon.name} for {move.power} damage.")
+            other_p.pokemon.hp -= move.power
         else:
-            print(f"{p_mon.name} missed!")
-        if other_mon.hp <= 0:
-            print(f"{other_p["name"]}'s {other_mon.name} is KO'd!")
-            print(f"{p["name"]} has won!")
+            print(f"{p.pokemon.name} missed!")
+        if other_p.pokemon.hp <= 0:
+            print(f"{other_p.name}'s {other_p.pokemon.name} is KO'd!")
+            print(f"{p.name} has won!")
             break
         else:
             player_id = (player_id + 1) % 2
