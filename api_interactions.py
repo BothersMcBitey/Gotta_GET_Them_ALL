@@ -53,6 +53,6 @@ def get_move_stats(move_name:str="", move_id:int=-1)->dict:
 
 # Run this code to test if it works:
 #print(get_move_stats("pound"))
-print(get_pokemon_stats("geodude"))
+#print(get_pokemon_stats("geodude"))
 
 

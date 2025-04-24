@@ -53,10 +53,7 @@ def get_player_pokemon(player_name)->str:
 def play_game(game_mode:int=1)->None:
     player_dict = {
         "name" : "",
-        "pokemon" : "",
-        "pokemon_stats" : [],
-        "moves" : [],
-        "move_names" : []
+        "pokemon" : None
     }
     player_one = player_dict.copy()
     player_two = player_dict.copy()
@@ -79,9 +76,10 @@ def play_game(game_mode:int=1)->None:
 
     # get pokemon stats
     for player in players:
-        player["pokemon_stats"] = api.get_pokemon_stats(player["pokemon"])
+        player["pokemon"] = pk.Pokemon(player["pokemon"])
 
     # Get moves
+    '''
     for player in players:
         possible_moves = api.get_possible_moves(pokemon_name=player["pokemon"], pokemon_level=1)
         player["move_names"] = [move["name"] for move in possible_moves]
@@ -89,7 +87,7 @@ def play_game(game_mode:int=1)->None:
         for move_name in player["move_names"]:
             ms = api.get_move_stats(move_name)
             move_stats.append(ms)
-        player["moves"] = move_stats
+        player["moves"] = move_stats'''
 
     # play game
     player_id:int = 0
@@ -100,17 +98,20 @@ def play_game(game_mode:int=1)->None:
         print(f"It's {p["name"]}'s turn!")
         # User picks move
         choose_random = (p["name"] == "CPU" and game_mode == 1)
-        chosen_move = get_choice(f"What will {p["name"]}'s {p["pokemon"].capitalize()} do?", p["move_names"],
+        player_mon:pk.Pokemon = p["pokemon"]
+        other_mon:pk.Pokemon = p_other["pokemon"]
+        chosen_move = get_choice(f"What will {p["name"]}'s {player_mon.name.capitalize()} do?",
+                                 [x.name for x in player_mon.move_set],
                                  "Invalid move. Please choose a valid move from the list.", choose_random)
-        print(f"{p["pokemon"].capitalize()} uses {chosen_move}!")
+        print(f"{player_mon.name.capitalize()} uses {chosen_move}!")
         # get data for that move
-        move = [x for x in p["moves"] if x["name"]==chosen_move][0]
-        power = move["power"] if move["power"] is not None else 0
-        print(f"{move["name"]} hits {p_other["name"]}'s {p_other["pokemon"]} for "
+        move = player_mon.get_move(chosen_move)
+        power = move.power if move.power is not None else 0
+        print(f"{move.name} hits {p_other["name"]}'s {other_mon.name} for "
               f"{power} damage.")
-        p_other["pokemon_stats"][0]["value"] -= power
-        if p_other["pokemon_stats"][0]["value"] <= 0:
-            print(f"{p_other["name"]}'s {p_other["pokemon"]} is KO'd!")
+        other_mon.hp -= power
+        if other_mon.hp <= 0:
+            print(f"{p_other["name"]}'s {other_mon.name} is KO'd!")
             print(f"{p["name"]} has won!")
             break
         else:
