@@ -39,11 +39,15 @@ def get_pokemon_stats(pokemon_name:str="", pokemon_id:int=-1)->list:
         stats.append(stat)
     return stats
 
-def get_move_stats(move_name:str="", move_id:int=-1)->list:
+def get_move_stats(move_name:str="", move_id:int=-1)->dict:
     move_data = _get_data("move", object_name=move_name, object_id=move_id)
-    stats = []
-    for key in ["accuracy", "power", "type", "pp", "name"]:
-        stats.append({key : move_data[key]})
+    stats = {
+        "accuracy" : move_data["accuracy"],
+        "power" : move_data["power"],
+        "type" : move_data["type"],
+        "pp" : move_data["pp"],
+        "name" : move_data["name"]
+    }
     return stats
 
 
