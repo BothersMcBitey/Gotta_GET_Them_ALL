@@ -92,30 +92,31 @@ def play_game(game_mode:int=1)->None:
     # play game
     player_id:int = 0
     while True:
+        # make shortcuts to get player info
         p = players[player_id]
-        p_other = players[(player_id + 1) % 2]
-        player_mon: pk.Pokemon = p["pokemon"]
-        other_mon: pk.Pokemon = p_other["pokemon"]
+        other_p = players[(player_id + 1) % 2]
+        p_mon:pk.Pokemon = p["pokemon"]
+        other_mon:pk.Pokemon = other_p["pokemon"]
 
         print(f"It's {p["name"]}'s turn!")
         # User picks move
         choose_random = (p["name"] == "CPU" and game_mode == 1)
-        chosen_move = get_choice(f"What will {p["name"]}'s {player_mon.name.capitalize()} do?",
-                                 [x.name for x in player_mon.move_set],
+        chosen_move = get_choice(f"What will {p["name"]}'s {p_mon.name.capitalize()} do?",
+                                 [x.name for x in p_mon.move_set],
                                  "Invalid move. Please choose a valid move from the list.", choose_random)
-        print(f"{player_mon.name.capitalize()} uses {chosen_move}!")
+        print(f"{p_mon.name.capitalize()} uses {chosen_move}!")
 
         # resolve attack
-        move:pk.Move = player_mon.get_move(chosen_move)
+        move:pk.Move = p_mon.get_move(chosen_move)
         # Let's use accuracy (even if incorrectly)
         hits:bool = move.accuracy >= random.random()
         if hits:
-            print(f"{move.name} hits {p_other["name"]}'s {other_mon.name} for {move.power} damage.")
+            print(f"{move.name} hits {other_p["name"]}'s {other_mon.name} for {move.power} damage.")
             other_mon.hp -= move.power
         else:
-            print(f"{player_mon.name} missed!")
+            print(f"{p_mon.name} missed!")
         if other_mon.hp <= 0:
-            print(f"{p_other["name"]}'s {other_mon.name} is KO'd!")
+            print(f"{other_p["name"]}'s {other_mon.name} is KO'd!")
             print(f"{p["name"]} has won!")
             break
         else:
