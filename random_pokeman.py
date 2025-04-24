@@ -78,38 +78,33 @@ def play_game(game_mode:int=1)->None:
     for player in players:
         player["pokemon"] = pk.Pokemon(player["pokemon"])
 
-    # Get moves
-    '''
-    for player in players:
-        possible_moves = api.get_possible_moves(pokemon_name=player["pokemon"], pokemon_level=1)
-        player["move_names"] = [move["name"] for move in possible_moves]
-        move_stats = []
-        for move_name in player["move_names"]:
-            ms = api.get_move_stats(move_name)
-            move_stats.append(ms)
-        player["moves"] = move_stats'''
-
     # play game
     player_id:int = 0
     while True:
         p = players[player_id]
         p_other = players[(player_id + 1) % 2]
+        player_mon: pk.Pokemon = p["pokemon"]
+        other_mon: pk.Pokemon = p_other["pokemon"]
 
         print(f"It's {p["name"]}'s turn!")
         # User picks move
         choose_random = (p["name"] == "CPU" and game_mode == 1)
-        player_mon:pk.Pokemon = p["pokemon"]
-        other_mon:pk.Pokemon = p_other["pokemon"]
         chosen_move = get_choice(f"What will {p["name"]}'s {player_mon.name.capitalize()} do?",
                                  [x.name for x in player_mon.move_set],
                                  "Invalid move. Please choose a valid move from the list.", choose_random)
         print(f"{player_mon.name.capitalize()} uses {chosen_move}!")
-        # get data for that move
+
+        # resolve attack
         move = player_mon.get_move(chosen_move)
+        # legacy code, in case a 0 value for power is ever parsed as None
         power = move.power if move.power is not None else 0
-        print(f"{move.name} hits {p_other["name"]}'s {other_mon.name} for "
-              f"{power} damage.")
-        other_mon.hp -= power
+        # Let's use accuracy (even if incorrectly)
+        hits:bool = move.accuracy if move.accuracy is not None else 1 >= random.random()
+        if hits:
+            print(f"{move.name} hits {p_other["name"]}'s {other_mon.name} for {power} damage.")
+            other_mon.hp -= power
+        else:
+            print(f"{player_mon.name} missed!")
         if other_mon.hp <= 0:
             print(f"{p_other["name"]}'s {other_mon.name} is KO'd!")
             print(f"{p["name"]} has won!")
