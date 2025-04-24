@@ -26,7 +26,7 @@ def get_choice(message:str, options:list=["y","n"], error_message:str="Invalid i
                 print(error_message)
 
 
-def display_pokemon_names()->None:
+def display_pokemon_names()->list:
     # Get the list of Pokémon from the API
     url = 'https://pokeapi.co/api/v2/pokemon/'
     response = requests.get(url)
@@ -42,6 +42,7 @@ def display_pokemon_names()->None:
             print()
             line_size_count = 0
     print("\n")
+    return pokemon_names
 
 
 # Function to get a player's Pokémon
@@ -123,7 +124,7 @@ def play_game(game_mode:int=1)->None:
 
 if __name__=="__main__":
     print("Welcome to Gotta_GET_Them_All, the (unofficial) CLI pokemon game.")
-    display_pokemon_names()
+    list_of_pokemon_names = display_pokemon_names()
     # Choose game mode
     game_mode = int(get_choice("Choose game mode: 1 Player (1) or 2 Player (2):", ['1', '2'],
                            "Invalid input. Please enter 1 or 2."))
