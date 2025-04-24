@@ -1,7 +1,6 @@
 import requests
 import json
 import random
-import api_interactions as api
 import pokemon as pk
 
 # only global variable, which is here because of laziness ==============================================================
@@ -26,14 +25,24 @@ def get_choice(message:str, options:list=["y","n"], error_message:str="Invalid i
             else:
                 print(error_message)
 
-def get_pokemon_names()->list:
+
+def display_pokemon_names()->None:
     # Get the list of Pokémon from the API
     url = 'https://pokeapi.co/api/v2/pokemon/'
     response = requests.get(url)
     pokemon_list = json.loads(response.text)['results']
     # Create a list of Pokémon names for easy validation
     pokemon_names = [pokemon['name'] for pokemon in pokemon_list]
-    return pokemon_names
+    print("Available Pokémon:")
+    line_size_count = 0
+    for name in pokemon_names:
+        print(name, end=", ")
+        line_size_count += 1
+        if line_size_count >= 8:
+            print()
+            line_size_count = 0
+    print("\n")
+
 
 # Function to get a player's Pokémon
 def get_player_pokemon(player_name)->str:
@@ -49,6 +58,7 @@ def get_player_pokemon(player_name)->str:
         raise Exception("Invalid choice given. Somehow.")
     print(f"{player_name} chose: {pokemon.capitalize()}")
     return pokemon
+
 
 def play_game(game_mode:int=1)->None:
     player_dict = {
@@ -95,7 +105,7 @@ def play_game(game_mode:int=1)->None:
         print(f"{player_mon.name.capitalize()} uses {chosen_move}!")
 
         # resolve attack
-        move = player_mon.get_move(chosen_move)
+        move:pk.Move = player_mon.get_move(chosen_move)
         # Let's use accuracy (even if incorrectly)
         hits:bool = move.accuracy >= random.random()
         if hits:
@@ -110,11 +120,10 @@ def play_game(game_mode:int=1)->None:
         else:
             player_id = (player_id + 1) % 2
 
+
 if __name__=="__main__":
-    print("Available Pokémon:")
-    list_of_pokemon_names = get_pokemon_names()
-    for name in list_of_pokemon_names:
-        print(name)
+    print("Welcome to Gotta_GET_Them_All, the (unofficial) CLI pokemon game.")
+    display_pokemon_names()
     # Choose game mode
     game_mode = int(get_choice("Choose game mode: 1 Player (1) or 2 Player (2):", ['1', '2'],
                            "Invalid input. Please enter 1 or 2."))
