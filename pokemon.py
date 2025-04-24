@@ -14,8 +14,8 @@ class Move:
             self.id = id
             self.data = api._get_data("move", object_id=self.id)
             self.name = self.data["name"]
-        self.accuracy = self.data["accuracy"]
-        self.power = self.data["power"]
+        self.accuracy = self.data["accuracy"] if self.data["accuracy"] is not None else 1
+        self.power = self.data["power"] if self.data["power"] is not None else 0
         self.type = self.data["type"]
         self.pp = self.data["pp"]
 

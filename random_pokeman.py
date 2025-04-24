@@ -96,13 +96,11 @@ def play_game(game_mode:int=1)->None:
 
         # resolve attack
         move = player_mon.get_move(chosen_move)
-        # legacy code, in case a 0 value for power is ever parsed as None
-        power = move.power if move.power is not None else 0
         # Let's use accuracy (even if incorrectly)
-        hits:bool = move.accuracy if move.accuracy is not None else 1 >= random.random()
+        hits:bool = move.accuracy >= random.random()
         if hits:
-            print(f"{move.name} hits {p_other["name"]}'s {other_mon.name} for {power} damage.")
-            other_mon.hp -= power
+            print(f"{move.name} hits {p_other["name"]}'s {other_mon.name} for {move.power} damage.")
+            other_mon.hp -= move.power
         else:
             print(f"{player_mon.name} missed!")
         if other_mon.hp <= 0:
