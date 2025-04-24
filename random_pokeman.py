@@ -76,7 +76,7 @@ def play_game(game_mode:int=1)->None:
     if game_mode == 1:
         p2_name = "CPU"
     elif game_mode == 2:
-        p2_name = input("Player two, what is your name?\n> 1")
+        p2_name = input("Player two, what is your name?\n> ")
 
     #build players
     player_one: Player = Player(p1_name)
