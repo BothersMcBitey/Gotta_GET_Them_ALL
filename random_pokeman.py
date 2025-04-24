@@ -1,7 +1,8 @@
 import requests
 import json
 import random
-import combat_stats as cs
+import api_interactions as api
+import pokemon as pk
 
 # only global variable, which is here because of laziness ==============================================================
 list_of_pokemon_names = ""
@@ -78,15 +79,15 @@ def play_game(game_mode:int=1)->None:
 
     # get pokemon stats
     for player in players:
-        player["pokemon_stats"] = cs.get_pokemon_stats(player["pokemon"])
+        player["pokemon_stats"] = api.get_pokemon_stats(player["pokemon"])
 
     # Get moves
     for player in players:
-        possible_moves = cs.get_possible_moves(pokemon_name=player["pokemon"], pokemon_level=1)
+        possible_moves = api.get_possible_moves(pokemon_name=player["pokemon"], pokemon_level=1)
         player["move_names"] = [move["name"] for move in possible_moves]
         move_stats = []
         for move_name in player["move_names"]:
-            ms = cs.get_move_stats(move_name)
+            ms = api.get_move_stats(move_name)
             move_stats.append(ms)
         player["moves"] = move_stats
 
