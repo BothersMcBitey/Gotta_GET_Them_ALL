@@ -3,7 +3,7 @@ import json
 import random
 import combat_stats as cs
 
-# only global variable, because GET requests are slow ==================================================================
+# only global variable, which is here because of laziness ==============================================================
 list_of_pokemon_names = ""
 
 def get_choice(message:str, options:list=["y","n"], error_message:str="Invalid input. Try again.",
